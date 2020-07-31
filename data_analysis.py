@@ -19,8 +19,8 @@ def clean_data(df):
     return df
 
 
-# Read the image list and csv
-images_path = 'images/*.jpg'
+# Read the image list and csv as Dataframe
+images_path = 'images/*'
 image_files = glob(images_path, recursive=True)
 df = pd.read_csv('metadata.csv')
 
@@ -35,16 +35,15 @@ for im in image_files:
     else:
         gray_imgs.append((image.shape[0], image.shape[1], None))
 
-data = np.array(colored_imgs + gray_imgs)
+all_imgs = np.array(colored_imgs + gray_imgs)
 colored_imgs = np.array(colored_imgs)
 gray_imgs = np.array(gray_imgs)
 
-
 print('RGB images {}'.format(len(colored_imgs)))
 print('Grayscale images {}'.format(len(gray_imgs)))
+
 fig = plt.figure(figsize=(20, 5))
 ax1 = fig.add_subplot(121)
-
 ax1.scatter(colored_imgs[:, 0], colored_imgs[:, 1], c='r', label='RGB Images')
 ax1.scatter(gray_imgs[:, 0], gray_imgs[:, 1], c='gray', label='Grayscale Images')
 ax1.grid()
@@ -54,7 +53,7 @@ ax1.set_title('Images Sizes and dimensions (in Pixels)', fontsize=12)
 ax1.legend()
 ax1 = fig.add_subplot(122)
 
-ax1.hist(data[:, :1], bins=50)
+ax1.hist(all_imgs[:, :1], bins=10)
 ax1.grid()
 ax1.set_xlabel('Image size', fontsize=12)
 ax1.set_ylabel('Num of Images (log)', fontsize=12)
@@ -62,19 +61,20 @@ ax1.xaxis.set_major_formatter(FuncFormatter((lambda x, b: '({},{})'.format(int(x
 ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax1.xaxis.set_tick_params(labelsize=9)
 ax1.set_title('Images Sizes distripution', fontsize=12)
-ax1.set_yscale('log')
 plt.savefig('image_sizes.png')
 
-plt.figure(figsize=(15, 5))
+plt.figure(figsize=(13, 5))
 plt.subplot(121)
 male_ratio = df[(df["Covid"] == 1) & (df["Sex"] == 'Male')]
 female_ratio = df[(df["Covid"] == 1) & (df["Sex"] == 'Female')]
 plt.bar('Male', male_ratio.shape[0])
 plt.bar('Female', female_ratio.shape[0])
-plt.ylabel('Cases', fontsize=15)
+plt.ylabel('COVID-19 Cases', fontsize=12)
 
 covid = df[(df["Covid"] == 1)]
 plt.subplot(122)
 covid['Age'].hist(bins=20)
 plt.xlabel('Age', fontsize=12)
 plt.savefig('features_analysis.png')
+
+print('Train images {}'.format(len(df)))
