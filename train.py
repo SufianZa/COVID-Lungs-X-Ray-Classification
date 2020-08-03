@@ -8,20 +8,16 @@ import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
 from skimage import exposure
+from data_analysis import clean_data
 
 
 class DataPreparation:
     def __init__(self, csv_path, images_path):
-        self.IMAGE_SIZE = (384,384)
+        self.IMAGE_SIZE = (384, 384)
         self.CLASS_TARGETS = ['No Finding', ' Other', 'COVID-19']
         self.CLASS_NUM = len(self.CLASS_TARGETS)
         self.images_list = glob(images_path, recursive=True)
-        self.df = self.clean_data(pd.read_csv(csv_path))
-
-    def clean_data(self, df):
-        df.dropna(inplace=True)
-        assert pd.notnull(df).all().all()
-        return df
+        self.df = clean_data(pd.read_csv(csv_path))
 
     def load(self):
         data = {'images': [], 'features': [], 'labels': []}
@@ -29,7 +25,7 @@ class DataPreparation:
             image_name = os.path.basename(image_path)
             # extract features from csv
             csv_row = self.df.loc[self.df.File == image_name]
-            if csv_row.empty : continue
+            if csv_row.empty: continue
 
             features = np.array([*csv_row['Age'].values, 0 if csv_row['Sex'].values == 'Female' else 1])
             image = np.array(Image.open(image_path).resize(self.IMAGE_SIZE))

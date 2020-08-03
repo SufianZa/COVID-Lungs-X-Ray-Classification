@@ -9,13 +9,14 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator
 from collections import Counter
 
 
-def clean_data(df):
+def clean_data(df, print_info=False):
     df.dropna(inplace=True)
     assert pd.notnull(df).all().all()
-    print(df.info())
-    print(df.isnull().sum())
-    # print csv features
-    print(df.columns)
+    if print_info:
+        print(df.info())
+        print(df.isnull().sum())
+        # print csv features
+        print(df.columns)
     return df
 
 
@@ -24,7 +25,7 @@ images_path = 'images/*'
 image_files = glob(images_path, recursive=True)
 df = pd.read_csv('metadata.csv')
 
-clean_data(df)
+clean_data(df, print_info=True)
 
 colored_imgs = []
 gray_imgs = []
