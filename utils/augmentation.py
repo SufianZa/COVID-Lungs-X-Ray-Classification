@@ -92,29 +92,16 @@ STRATEGY_PICKER = {
     'flip_shear': flip_shear,
     'flip_noise': flip_noise
 }
-STRATEGIES = [
-    'flip',
-    'noise_bright',
-    'bright',
-    'shear',
-    'dark',
-    'noise_bright_shear',
-    'flip_shear_noise',
-    'flip_dark',
-    'noise',
-    'shear_noise_dark',
-    'flip_shear',
-    'flip_noise'
-]
 
 
-def save_augmentation(image, image_name, label, features, batch, dst_dir, aug_num=12):
-    random.shuffle(STRATEGIES)
-    strategy_arr = STRATEGIES[:aug_num]
+def save_augmentation(image, image_name, label, features, data, dst_dir, aug_num=12):
+    strategies = list(STRATEGY_PICKER.keys())
+    random.shuffle(strategies)
+    strategy_arr = strategies[:aug_num]
     for strategy in strategy_arr:
         res = STRATEGY_PICKER[strategy](image)
         result = Image.fromarray((res * 255).astype(np.uint8))
         result.save(os.path.join(dst_dir, 'Aug' + strategy + '_' + image_name))
-        batch['paths'].append('Aug' + strategy + '_' + image_name)
-        batch['features'].append(features)
-        batch['labels'].append(label)
+        data['paths'].append('Aug' + strategy + '_' + image_name)
+        data['features'].append(features)
+        data['labels'].append(label)

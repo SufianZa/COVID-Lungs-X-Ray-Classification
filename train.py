@@ -64,7 +64,7 @@ class DataPreparation:
                 save_augmentation(image, image_name, label, features, data, self.dst_dir, aug_num=1)
                 num_aug_images += 1
 
-            # add data to batch
+            # add to data object
             data['paths'].append(image_name)
             data['features'].append(features)
             data['labels'].append(label)

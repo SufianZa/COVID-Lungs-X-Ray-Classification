@@ -17,7 +17,6 @@ def clean_data(df, print_info=False):
         print(df.isnull().sum())
         # print csv features
         print(df.columns)
-        print(df[['Covid','No Finding']].describe())
     return df
 
 
