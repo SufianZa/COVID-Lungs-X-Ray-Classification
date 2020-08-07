@@ -36,9 +36,9 @@ There are some features are correlated with Covid-19 as showen in the following:
 ![RGB images and size distribution](features_analysis.png)
 
 <h3>Preparation of Train data</h3>
-Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (384, 384)
+Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (384, 384).<br>
 The Observations of the Dataset are quietly unbalanced, especially for the class covid-19.
 After performing Offline Data-Augmentation we obtained 1300 observation for each class. 
-Data-Augmentation includes flipping, shearing, image, noise and increase/decrease brightness.
+Data-Augmentation includes flipping, shearing, noise and increase/decrease brightness.
 
 ![Balancing Data](balancing.png)
