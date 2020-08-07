@@ -5,7 +5,7 @@ from glob import glob
 from PIL import Image
 from utils.augmentation import save_augmentation
 from skimage import exposure
-from data_analysis import clean_data
+import matplotlib.pyplot as plt
 import pickle
 
 
@@ -21,6 +21,9 @@ class DataPreparation:
             os.makedirs(self.dst_dir)
 
     def load(self):
+        num_covid_pre_aug = 0
+        num_other_pre_aug = 0
+        num_no_finding_pre_aug = 0
         data = {'paths': [], 'features': [], 'labels': []}
         num_aug_images = 0
         for image_path in self.images_list:
@@ -49,11 +52,15 @@ class DataPreparation:
             label = np.zeros(self.CLASS_NUM)
             if covid:
                 label[2] = 1
+                num_covid_pre_aug +=1
             if other_disease:
                 label[1] = 1
+                num_other_pre_aug  += 1
             if no_finding:
+                num_no_finding_pre_aug +=1
                 label[0] = 1
-                # throw error if label not vaild
+
+            # throw error if label not vaild
             if np.count_nonzero(label) != 1:
                 raise ValueError('CSV Data Error: Found no corresponding label in row {}'.format(csv_row))
 
@@ -72,7 +79,22 @@ class DataPreparation:
             result.save(os.path.join(self.dst_dir, image_name))
         with open('paths_features_labels.pkl', 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-
+        f, axs = plt.subplots(1,2,figsize=(12,4))
+        axs[0].bar('Covid', num_covid_pre_aug)
+        axs[0].bar('Other disease', num_other_pre_aug)
+        axs[0].bar('No Finding', num_no_finding_pre_aug)
+        axs[0].set_title('Labels before Augmentation')
+        axs[0].set_xlabel('Label')
+        axs[0].set_ylabel('Count')
+        _, counts = np.unique(data['labels'], axis=0, return_counts=True)
+        axs[1].bar('Covid', counts[0])
+        axs[1].bar('Other disease', counts[1])
+        axs[1].bar('No Finding', counts[2])
+        axs[1].set_title('Labels after Augmentation')
+        axs[1].set_xlabel('Label')
+        axs[1].set_ylabel('Count')
+        plt.tight_layout()
+        plt.savefig('balancing.png')
 
 if __name__ == '__main__':
     DataPreparation(csv_path='metadata.csv', src_dir='images', dst_dir='train_data').load()
