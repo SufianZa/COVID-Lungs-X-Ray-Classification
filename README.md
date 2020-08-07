@@ -1,8 +1,8 @@
 # Lungs-X-Ray-Classification
 <h3>Dataset analysis</h3>
 Dataset contains Chest Xray images from <a href=https://stanfordmlgroup.github.io/competitions/chexpert/>CheXpert</a>
-with 2100 observation including 100 Covid-19 xray images.
-The Task is Multi class Classification namely Covid-19, other disease or No finding.
+with 2100 observations including 100 Covid-19 xray images.
+The Task is Multi-label Classification, namely "Covid-19", "other disease" or "No finding".
 Therefore, we summarize the data into 3 classes. The CSV file is structured as followed:
 <table>
 <th><td> Column </td> </th>
@@ -38,7 +38,7 @@ There are some features are correlated with Covid-19 as showen in the following:
 <h3>Preparation of Train data</h3>
 Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (384, 384).<br>
 The Observations of the Dataset are quietly unbalanced, especially for the class covid-19.
-After performing Offline Data-Augmentation we obtained 1300 observation for each class. 
+After performing Offline Data-Augmentation we obtained 1300 observations for each class. 
 Data-Augmentation includes flipping, shearing, noise and increase/decrease brightness.
 
 ![Balancing Data](balancing.png)
