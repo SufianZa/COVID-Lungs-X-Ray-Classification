@@ -102,6 +102,4 @@ def save_augmentation(image, image_name, label, features, data, dst_dir, aug_num
         res = STRATEGY_PICKER[strategy](image)
         result = Image.fromarray((res * 255).astype(np.uint8))
         result.save(os.path.join(dst_dir, 'Aug' + strategy + '_' + image_name))
-        data['files'].append('Aug' + strategy + '_' + image_name)
-        data['features'].append(features)
-        data['labels'].append(label)
+        data.append(('Aug' + strategy + '_' + image_name, features, label))

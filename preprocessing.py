@@ -25,7 +25,7 @@ class Preprocessing:
             os.makedirs(self.dst_dir)
 
     def load(self):
-        data = {'files': [], 'features': [], 'labels': []}
+        data = []
         no_finding_aug = 0
         for image_path in self.images_list:
             image_name = os.path.basename(image_path)
@@ -56,39 +56,41 @@ class Preprocessing:
                 save_augmentation(image, image_name, label, features, data, self.dst_dir, aug_num=1)
                 no_finding_aug += 1
 
+            # if Covid
             if label[1]:
                 save_augmentation(image, image_name, label, features, data, self.dst_dir)
 
             # add to data object
-            data['files'].append(image_name)
-            data['features'].append(features)
-            data['labels'].append(label)
+            data.append((image_name, features, label))
+
             result = Image.fromarray((image * 255).astype(np.uint8))
             result.save(os.path.join(self.dst_dir, image_name))
         with open('paths_features_labels.pkl', 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        self.plot_bar(data)
 
-        f, axs = plt.subplots(2,2,figsize=(12,12))
+    def plot_bar(self, data):
+        df = pd.DataFrame(data)
+        f, axs = plt.subplots(2, 2, figsize=(12, 12))
         self.CLASS_TARGETS[2] = 'Enlarged Cardi.'
         axs[0][0].bar(self.CLASS_TARGETS, self.label_counter)
         axs[0][0].set_title('Labels before Augmentation')
         axs[0][0].set_xlabel('Label')
         axs[0][0].set_xticklabels(self.CLASS_TARGETS, rotation=90, fontsize=9)
         axs[0][0].set_ylabel('Count')
-        _, counts = np.unique(data['labels'], axis=0, return_counts=True)
-
+        _, counts = np.unique(df[2].tolist(), axis=0, return_counts=True)
         counts = counts[::-1]
         axs[0][1].bar(self.CLASS_TARGETS, counts)
         axs[0][1].set_title('Labels after Augmentation')
         axs[0][1].set_xlabel('Label')
         axs[0][1].set_ylabel('Count')
 
-        axs[1][0].bar(self.CLASS_TARGETS[:2] +[ 'Other'], [*self.label_counter[:2], self.label_counter[2:].sum()])
+        axs[1][0].bar(self.CLASS_TARGETS[:2] + ['Other'], [*self.label_counter[:2], self.label_counter[2:].sum()])
         axs[1][0].set_title('Labels before Augmentation Summarized 3 classes')
         axs[1][0].set_xlabel('Label')
         axs[1][0].set_ylabel('Count')
 
-        axs[1][1].bar(self.CLASS_TARGETS[:2] +['Other'], [*counts[:2] , counts[2:].sum()])
+        axs[1][1].bar(self.CLASS_TARGETS[:2] + ['Other'], [*counts[:2], counts[2:].sum()])
         axs[1][1].set_title('Labels after Augmentation Summarized 3 classes')
         axs[1][1].set_xlabel('Label')
         axs[1][1].set_ylabel('Count')
