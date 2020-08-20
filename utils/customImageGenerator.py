@@ -3,14 +3,16 @@ import numpy as np
 import os
 import cv2
 
+
 class CustomImageGenerator(Sequence):
-    def __init__(self, files, labels, directory, n_features=2, batch_size=16, img_dim=(384, 384, 1),
+    def __init__(self, files, labels, directory, n_features=2, batch_size=16, img_dim=384,
                  n_classes=3, shuffle=True):
-        self.img_dim = img_dim
+        self.img_dim = (img_dim, img_dim)
         self.files = files
         self.n = len(self.files)
         self.labels = labels
         self.batch_size = batch_size
+        self.resize = img_dim != 384
         self.n_classes = n_classes
         self.n_features = n_features
         self.shuffle = shuffle
@@ -32,9 +34,13 @@ class CustomImageGenerator(Sequence):
         return self.get_images_batch(files_batch), labels_batch
 
     def get_images_batch(self, files_batch):
-        images = np.empty((self.batch_size, *self.img_dim))
-        # features = np.zeros((self.batch_size, self.n_features))
+        images = np.empty((self.batch_size, *self.img_dim, 1))
         for i, file_name in enumerate(files_batch):
-            img = np.array(cv2.imread(os.path.join(self.dir, file_name), cv2.IMREAD_GRAYSCALE)).astype(float)
-            images[i, :, :, 0] = (img - np.min(img)) / (np.max(img) - np.min(img))
+            file_path = os.path.join(self.dir, file_name)
+            if not (os.path.isfile(file_path) and os.access(file_path, os.R_OK)):
+                print("Error: Either the file is missing or not readable {}".format(file_name))
+            img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+            if self.resize:
+                img = np.array(cv2.resize(img, dsize=self.img_dim, interpolation=cv2.INTER_CUBIC)).astype(float)
+            images[i, :, :, 0] = np.array(img)
         return images

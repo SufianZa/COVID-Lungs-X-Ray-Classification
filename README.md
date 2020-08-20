@@ -42,3 +42,39 @@ After performing Offline Data-Augmentation we obtained 1300 observations for eac
 Data-Augmentation includes flipping, shearing, noise and increase/decrease brightness.
 
 ![Balancing Data](balancing.png)
+
+<h3>Training</h3>
+The Date is splite into 
+<ul>
+<li>
+80% Training Data
+</li>
+<li>
+15% Validation Data
+</li>
+<li>
+5% Test Data
+</li>
+</ul>
+<strong>Model</strong> is SqueezeNet <br>
+Using:<br>
+<ul>
+<li>
+Adam Optimizer with learning rate of 0.0001 and decay=1e-5.
+</li>
+<li>
+Batch_size = 16
+</li>
+<li>
+Image size = 384 x 384
+</li>
+</ul>
+
+![learning_curve](learning_curve.png)
+
+Training stopped after Epoch 32.
+
+<h3>Evaluation</h3>
+The Model has reached accuracy of <strong>77%</strong> on unseen Data.
+
+![evaluation](conf_matrix.png)

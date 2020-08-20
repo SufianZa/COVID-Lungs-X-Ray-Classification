@@ -1,4 +1,5 @@
 import argparse
+from model import SqueezeNet
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train model with given dataset.')
