@@ -79,4 +79,6 @@ if __name__ == '__main__':
     plt.xlabel('Age', fontsize=12)
     plt.savefig('features_analysis.png')
 
+    print('Average age of Covid patients: {}'.format(covid["Age"].mean()))
+
     print('Train images {}'.format(len(df)))
