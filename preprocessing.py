@@ -4,7 +4,7 @@ import numpy as np
 from glob import glob
 from PIL import Image
 
-from model import SqueezeNet
+from tqdm import tqdm
 from utils.augmentation import save_augmentation
 from skimage import exposure
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ import pickle
 
 class Preprocessing:
     def __init__(self, csv_path, src_dir, dst_dir):
-        self.IMAGE_SIZE = (384, 384)
+        self.IMAGE_SIZE = (320, 320)
         self.CLASS_TARGETS = ['No Finding', 'Covid', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
                            'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
                            'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
@@ -27,7 +27,7 @@ class Preprocessing:
     def load(self):
         data = []
         no_finding_aug = 0
-        for image_path in self.images_list:
+        for image_path in tqdm(self.images_list):
             image_name = os.path.basename(image_path)
             # extract features from csv
             csv_row = self.df.loc[self.df.File == image_name]
@@ -52,6 +52,7 @@ class Preprocessing:
             if np.count_nonzero(label) != 1:
                 raise ValueError('CSV Data Error: Found no corresponding label in row {}'.format(csv_row))
 
+            # if no finding
             if label[0] and no_finding_aug < 600:
                 save_augmentation(image, image_name, label, features, data, self.dst_dir, aug_num=1)
                 no_finding_aug += 1

@@ -17,8 +17,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 def show_learning_curves(history, model_name):
     fig, ax = plt.subplots(2, 1, figsize=(7, 12), facecolor='#F0F0F0')
-    ax[0].plot(history['accuracy'])
-    ax[0].plot(history['val_accuracy'])
+    ax[0].plot(history['acc'])
+    ax[0].plot(history['val_acc'])
     ax[0].set_title('model accuracy')
     ax[0].set_ylabel('accuracy')
     ax[0].set_xlabel('epoch')
@@ -59,8 +59,10 @@ def show_confusion_Matrix(y_pred, y_true, targets, model_name):
 
 
 class BaseModel:
-    def __init__(self, input_size=(384, 384, 1), n_class=3, model_name='undefined'):
+    def __init__(self, input_size=(384, 384, 1), n_class=3, batch_size=16, epochs=60, model_name='undefined'):
         self.model_name = model_name
+        self.batch_size = batch_size
+        self.epochs = epochs
         self.CLASS_TARGETS = ['No Finding', 'Covid', 'other'] if n_class == 3 else ['No Finding', 'Covid',
                                                                                     'Enlarged Cardiomediastinum',
                                                                                     'Cardiomegaly', 'Lung Opacity',
@@ -83,7 +85,7 @@ class BaseModel:
             df[3] = [[l[0], l[1], l[2:].sum()] for l in df[2].tolist()]  # 3: labels summarized into 3 e. g. [0 , 0 , 1]
         else:
             df[3] = df[2]
-
+        df = df[:400]
         # split data into 80% train, 15% validation and 5% unseen test data
         n_samples = len(df)
         train_x, test_x, train_y, test_y = train_test_split(df[0].tolist(), df[3].tolist(), test_size=0.2,
@@ -94,18 +96,19 @@ class BaseModel:
                 len(train_x) / n_samples) * 100, (len(val_x) / n_samples) * 100, (len(unseen_x) / n_samples) * 100))
 
         # create generators
-        train_generator = CustomImageGenerator(train_x, train_y, directory=dir, batch_size=32,
+        train_generator = CustomImageGenerator(train_x, train_y, directory=dir, batch_size=self.batch_size,
                                                input_size=self.input_size)
-        valid_generator = CustomImageGenerator(val_x, val_y, directory=dir, batch_size=32, input_size=self.input_size)
+        valid_generator = CustomImageGenerator(val_x, val_y, directory=dir, batch_size=self.batch_size,
+                                               input_size=self.input_size)
 
         early_stop = EarlyStopping(monitor='val_loss',
                                    min_delta=0,
                                    patience=8,
                                    verbose=0, mode='auto')
         # fit model
-        self.history = self.model.fit(train_generator, validation_data=valid_generator, epochs=1,
-                                      steps_per_epoch=train_generator.n // train_generator.batch_size,
-                                      validation_steps=valid_generator.n // valid_generator.batch_size,
+        self.history = self.model.fit(train_generator, validation_data=valid_generator, epochs=self.epochs,
+                                      steps_per_epoch=train_generator.n // self.batch_size,
+                                      validation_steps=valid_generator.n // self.batch_size,
                                       callbacks=[early_stop])
 
         # save weight and test data
@@ -136,6 +139,9 @@ class BaseModel:
 
 
 class SqueezeNet(BaseModel):
+    def __init__(self, input_size=(384, 384, 1), n_class=3, batch_size=16, epochs=60):
+        super().__init__(input_size, n_class, batch_size, epochs, model_name='SqueezeNet')
+
     def fire(self, x, squeeze_size):
         return self.expand(self.squeeze(x, squeeze_size), squeeze_size * 4)
 
@@ -147,12 +153,9 @@ class SqueezeNet(BaseModel):
         right = Conv2D(filters=expand_size, kernel_size=3, activation='relu', padding='same')(x)
         return concatenate([left, right], axis=3)
 
-    def __init__(self, input_size=384, n_class=3):
-        super().__init__(input_size, n_class, model_name='SqueezeNet')
-
     def init_network(self):
         # input
-        input_layer = Input((self.input_size, self.input_size, 1))
+        input_layer = Input(self.input_size)
 
         # conv 1
         x = Conv2D(kernel_size=7, filters=96, padding='same', activation='relu', strides=2)(input_layer)
@@ -211,8 +214,8 @@ class SqueezeNet(BaseModel):
 
 
 class ResNet152(BaseModel):
-    def __init__(self, input_size=(224, 224, 3), n_class=3):
-        super().__init__(input_size, n_class, model_name='ResNet50V2')
+    def __init__(self, input_size=(224, 224, 3), n_class=3, batch_size=16, epochs=60):
+        super().__init__(input_size, n_class, batch_size, epochs, model_name='ResNet50V2')
 
     def init_network(self):
         model = applications.ResNet152(include_top=False, weights='imagenet',
@@ -236,8 +239,8 @@ class ResNet152(BaseModel):
 
 
 class VGG16(BaseModel):
-    def __init__(self, input_size=(224, 224, 3), n_class=3):
-        super().__init__(input_size, n_class, model_name='Vgg16')
+    def __init__(self, input_size=(224, 224, 3), n_class=3, batch_size=16, epochs=60):
+        super().__init__(input_size, n_class, batch_size, epochs, model_name='Vgg16')
 
     def init_network(self):
         model = applications.vgg16(include_top=False, weights='imagenet',
@@ -261,8 +264,8 @@ class VGG16(BaseModel):
 
 
 class DenseNet201(BaseModel):
-    def __init__(self, input_size=(224, 224, 3), n_class=3):
-        super().__init__(input_size, n_class, model_name='DenseNet201')
+    def __init__(self, input_size=(224, 224, 3), n_class=3, batch_size=16, epochs=60):
+        super().__init__(input_size, n_class, batch_size, epochs, model_name='DenseNet201')
 
     def init_network(self):
         model = applications.DenseNet201(include_top=False, weights='imagenet',
@@ -286,6 +289,6 @@ class DenseNet201(BaseModel):
 
 
 if __name__ == '__main__':
-    squeezeNet = ResNet152(n_class=3)
+    squeezeNet = SqueezeNet(n_class=3)
     squeezeNet.train(dir='train_data', pkl_file='paths_features_labels.pkl')
     squeezeNet.evaluate_model(dir='train_data')
