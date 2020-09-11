@@ -5,14 +5,15 @@ import cv2
 
 
 class CustomImageGenerator(Sequence):
-    def __init__(self, files, labels, directory, n_features=2, batch_size=16, img_dim=384,
+    def __init__(self, files, labels, directory, n_features=2, batch_size=16, input_size=(320,320,1),
                  n_classes=3, shuffle=True):
-        self.img_dim = (img_dim, img_dim)
+        self.img_dim = input_size[:2]
+        self.channels = input_size[2]
         self.files = files
         self.n = len(self.files)
         self.labels = labels
         self.batch_size = batch_size
-        self.resize = img_dim != 384
+        self.resize = input_size != (320,320,1)
         self.n_classes = n_classes
         self.n_features = n_features
         self.shuffle = shuffle
@@ -34,7 +35,7 @@ class CustomImageGenerator(Sequence):
         return self.get_images_batch(files_batch), labels_batch
 
     def get_images_batch(self, files_batch):
-        images = np.empty((self.batch_size, *self.img_dim, 1))
+        images = np.empty((self.batch_size, *self.img_dim, self.channels))
         for i, file_name in enumerate(files_batch):
             file_path = os.path.join(self.dir, file_name)
             if not (os.path.isfile(file_path) and os.access(file_path, os.R_OK)):
@@ -42,5 +43,6 @@ class CustomImageGenerator(Sequence):
             img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
             if self.resize:
                 img = np.array(cv2.resize(img, dsize=self.img_dim, interpolation=cv2.INTER_CUBIC)).astype(float)
-            images[i, :, :, 0] = np.array(img)
+            for c in range(self.channels):
+                images[i, :, :, c] = np.array(img)
         return images
