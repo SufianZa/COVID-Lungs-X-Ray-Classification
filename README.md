@@ -56,25 +56,57 @@ The Date is splite into
 5% Test Data
 </li>
 </ul>
-<strong>Model</strong> is SqueezeNet <br>
-Using:<br>
-<ul>
-<li>
-Adam Optimizer with learning rate of 0.0001 and decay=1e-5.
-</li>
-<li>
-Batch_size = 16
-</li>
-<li>
-Image size = 384 x 384
-</li>
-</ul>
 
-![learning_curve](learning_curve.png)
 
-Training stopped after Epoch 32.
+Training stopped after 
 
 <h3>Evaluation</h3>
 The Model has reached accuracy of <strong>77%</strong> on unseen Data.
 
-![evaluation](conf_matrix.png)
+
+<table>
+<th><td> Confusion matrix </td>  <td> learning curves </td> <td> Details </td></th>
+<tr><td>SqueezeNet </td><td><img src="results/SqueezeNet_conf_matrix.png"></td><td><img src="results/SqueezeNet_curves.png" width="40%">  </td> 
+<td>
+   <ul>
+   <li>
+     Adam Optimizer with learning rate of 0.0001 and decay=1e-5. 
+  </li>
+  <li>
+    Batch_size = 16 
+  </li>
+  <li>
+    Image size = 384 x 384
+  </li>
+  <li>
+  Accuracy = <strong>77%</strong> on unseen Data.
+  </li>
+  <li>
+  Epoch 32.
+  </li>
+</ul>
+  </td></tr>
+  <tr><td>ResNet152 </td><td><img src="results/ResNet152_conf_matrix.png"></td><td><img src="results/ResNet152_curves.png" width="40%">  </td> 
+<td>
+   <ul>
+   <li>
+     Adam learning rate = 0.01 and decay=1e-5. 
+  </li>
+     <li>
+     ImageNet weight transfer 
+  </li>
+  <li>
+    Batch_size = 256 
+  </li>
+  <li>
+    Image size = 224 x 224
+  </li>
+  <li>
+  Accuracy = <strong>78%</strong> on unseen Data.
+  </li>
+  <li>
+  Epoch 19.
+  </li>
+</ul>
+  </td></tr>
+</table>

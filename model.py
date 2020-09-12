@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from utils.customImageGenerator import CustomImageGenerator
 import pickle
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -17,8 +17,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 def show_learning_curves(history, model_name):
     fig, ax = plt.subplots(2, 1, figsize=(7, 12), facecolor='#F0F0F0')
-    ax[0].plot(history['acc'])
-    ax[0].plot(history['val_acc'])
+    ax[0].plot(history['accuracy'])
+    ax[0].plot(history['val_accuracy'])
     ax[0].set_title('model accuracy')
     ax[0].set_ylabel('accuracy')
     ax[0].set_xlabel('epoch')
@@ -85,7 +85,7 @@ class BaseModel:
             df[3] = [[l[0], l[1], l[2:].sum()] for l in df[2].tolist()]  # 3: labels summarized into 3 e. g. [0 , 0 , 1]
         else:
             df[3] = df[2]
-        df = df[:400]
+
         # split data into 80% train, 15% validation and 5% unseen test data
         n_samples = len(df)
         train_x, test_x, train_y, test_y = train_test_split(df[0].tolist(), df[3].tolist(), test_size=0.2,
@@ -105,11 +105,13 @@ class BaseModel:
                                    min_delta=0,
                                    patience=8,
                                    verbose=0, mode='auto')
+        check_point = ModelCheckpoint('best_'+self.weight_file, monitor='val_loss', mode='min', save_best_only=True, verbose=1)
+
         # fit model
         self.history = self.model.fit(train_generator, validation_data=valid_generator, epochs=self.epochs,
                                       steps_per_epoch=train_generator.n // self.batch_size,
                                       validation_steps=valid_generator.n // self.batch_size,
-                                      callbacks=[early_stop])
+                                      callbacks=[early_stop, check_point])
 
         # save weight and test data
         self.model.save_weights(self.weight_file)
@@ -117,7 +119,7 @@ class BaseModel:
             pickle.dump({'x': unseen_x, 'y': unseen_y, 'history': self.history.history}, f)
 
     def evaluate_model(self, dir):
-        self.model.load_weights(self.weight_file)
+        self.model.load_weights('best_'+self.weight_file)
         with open("unseen_data.pkl", "rb") as f:
             data = pickle.load(f)
         # data['y'] = [data['y'][idx] for idx, f in enumerate(data['x']) if os.path.isfile(os.path.join(dir, f)) and os.access(os.path.join(dir, f), os.R_OK)]
@@ -130,12 +132,15 @@ class BaseModel:
         y_true = np.argmax(unseen_gen.labels, axis=1)
 
         show_confusion_Matrix(y_pred, y_true, self.CLASS_TARGETS, self.model_name)
-        # plt.savefig('conf_matrix.png')
+        plt.savefig('SqueezeNet_conf_matrix.png')
 
         show_learning_curves(data['history'], self.model_name)
-        # plt.savefig('learning_curve.png')
+        plt.savefig('SqueezeNet_curves.png')
 
         plt.show()
+
+    def init_network(self):
+        raise NotImplementedError
 
 
 class SqueezeNet(BaseModel):
@@ -215,7 +220,7 @@ class SqueezeNet(BaseModel):
 
 class ResNet152(BaseModel):
     def __init__(self, input_size=(224, 224, 3), n_class=3, batch_size=16, epochs=60):
-        super().__init__(input_size, n_class, batch_size, epochs, model_name='ResNet50V2')
+        super().__init__(input_size, n_class, batch_size, epochs, model_name='ResNet152')
 
     def init_network(self):
         model = applications.ResNet152(include_top=False, weights='imagenet',
@@ -225,7 +230,7 @@ class ResNet152(BaseModel):
         x = Flatten()(x)
         x = Dense(256, activation="relu")(x)
         x = Dropout(0.5)(x)
-        output = Dense(3, activation="softmax")(x)
+        output = Dense(len(self.CLASS_TARGETS), activation="softmax")(x)
         for layer in model.layers:
             layer.trainable = False
 
@@ -234,7 +239,7 @@ class ResNet152(BaseModel):
 
         # compile Model
         self.model.compile(loss='categorical_crossentropy',
-                           optimizer=Adam(lr=0.0001, decay=1e-5),
+                           optimizer='adam',
                            metrics=['accuracy'])
 
 
@@ -250,7 +255,7 @@ class VGG16(BaseModel):
         x = Flatten()(x)
         x = Dense(128, activation="relu")(x)
         x = Dropout(0.5)(x)
-        output = Dense(3, activation="softmax")(x)
+        output = Dense(len(self.CLASS_TARGETS), activation="softmax")(x)
         for layer in model.layers:
             layer.trainable = False
 
@@ -275,7 +280,7 @@ class DenseNet201(BaseModel):
         x = Flatten()(x)
         x = Dense(128, activation="relu")(x)
         x = Dropout(0.5)(x)
-        output = Dense(3, activation="softmax")(x)
+        output = Dense(len(self.CLASS_TARGETS), activation="softmax")(x)
         for layer in model.layers:
             layer.trainable = False
 
@@ -289,6 +294,6 @@ class DenseNet201(BaseModel):
 
 
 if __name__ == '__main__':
-    squeezeNet = SqueezeNet(n_class=3)
-    squeezeNet.train(dir='train_data', pkl_file='paths_features_labels.pkl')
-    squeezeNet.evaluate_model(dir='train_data')
+    model = ResNet152(n_class=3, epochs=35, batch_size=128)
+    model.train(dir='aug_data', pkl_file='paths_features_labels.pkl')
+    model.evaluate_model(dir='aug_data')
