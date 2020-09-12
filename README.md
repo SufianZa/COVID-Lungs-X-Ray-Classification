@@ -31,12 +31,12 @@ Also the dataset consists of grayscale and RGB images with different image sizes
 and 2008 Grayscale images.
 
 <h3>Features Correlations with Covid-19</h3>
-There are some features are correlated with Covid-19 as showen in the following:
+There are some features correlated with Covid-19 as showen in the following:
 
 ![RGB images and size distribution](features_analysis.png)
 
 <h3>Preparation of Train data</h3>
-Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (384, 384).<br>
+Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (320, 320).<br>
 The Observations of the Dataset are quietly unbalanced, especially for the class covid-19.
 After performing Offline Data-Augmentation we obtained 1300 observations for each class. 
 Data-Augmentation includes flipping, shearing, noise and increase/decrease brightness.
@@ -61,8 +61,7 @@ The Date is splite into
 Training stopped after 
 
 <h3>Evaluation</h3>
-The Model has reached accuracy of <strong>77%</strong> on unseen Data.
-
+Most Models have reached accuracy of <strong>77%</strong> on unseen Data.
 
 <table>
 <th><td> Confusion matrix </td>  <td> Details </td></th>
