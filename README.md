@@ -65,8 +65,8 @@ The Model has reached accuracy of <strong>77%</strong> on unseen Data.
 
 
 <table>
-<th><td> Confusion matrix </td>  <td> learning curves </td> <td> Details </td></th>
-<tr><td>SqueezeNet </td><td><img src="results/SqueezeNet_conf_matrix.png"></td><td><img src="results/SqueezeNet_curves.png" width="40%">  </td> 
+<th><td> Confusion matrix </td>  <td> Details </td></th>
+<tr><td>SqueezeNet </td><td><img src="results/SqueezeNet_conf_matrix.png"></td> 
 <td>
    <ul>
    <li>
@@ -86,7 +86,7 @@ The Model has reached accuracy of <strong>77%</strong> on unseen Data.
   </li>
 </ul>
   </td></tr>
-  <tr><td>ResNet152 </td><td><img src="results/ResNet152_conf_matrix.png"></td><td><img src="results/ResNet152_curves.png" width="40%">  </td> 
+  <tr><td>ResNet152 </td><td><img src="results/ResNet152_conf_matrix.png"></td> 
 <td>
    <ul>
    <li>
@@ -110,3 +110,14 @@ The Model has reached accuracy of <strong>77%</strong> on unseen Data.
 </ul>
   </td></tr>
 </table>
+<h3>learning curves </h3>
+<h5>ResNet152<h5>
+   
+<img src="results/ResNet152_curves.png" width="40%" alt="ResNet152">
+
+<h5>SqueezeNet<h5>
+ 
+ <img src="results/SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+
+<h5>VGG16<h5>
+<h5>DenseNet201<h5>
