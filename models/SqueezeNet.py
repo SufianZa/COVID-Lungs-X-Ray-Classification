@@ -2,7 +2,7 @@ from tensorflow.keras.layers import Conv2D, MaxPool2D, concatenate, \
     GlobalAveragePooling2D, Dropout, Input, Activation, BatchNormalization
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-from Models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class SqueezeNet(BaseModel):

@@ -27,7 +27,7 @@ def show_learning_curves(history, model_name):
     ax[1].legend(['train', 'valid.'])
     fig.suptitle('Learning curves of {} COVID Classifier'.format(model_name), y=1)
     plt.tight_layout()
-    plt.savefig('{}_curves.png', model_name)
+    plt.savefig('results/{}_curves.png', model_name)
 
 
 def show_confusion_Matrix(y_pred, y_true, targets, model_name):
@@ -52,7 +52,7 @@ def show_confusion_Matrix(y_pred, y_true, targets, model_name):
     plt.xlabel('Predicted label', labelpad=15)
     plt.ylabel('True label')
     plt.title('Confusion Matrix of {} COVID Classifier'.format(model_name))
-    plt.savefig('{}_conf_matrix.png'.format(model_name))
+    plt.savefig('results/{}_conf_matrix.png'.format(model_name))
 
 
 
@@ -71,7 +71,7 @@ class BaseModel:
                                                                                     'Pleural Other', 'Fracture',
                                                                                     'Support Devices']
         self.input_size = input_size
-        self.weight_file = 'weight{}.hdf5'.format(model_name)
+        self.weight_file = 'weight_{}.hdf5'.format(model_name)
         self.init_network()
 
     def train(self, dir, pkl_file):
@@ -83,7 +83,7 @@ class BaseModel:
             df[3] = [[l[0], l[1], l[2:].sum()] for l in df[2].tolist()]  # 3: labels summarized into 3 e. g. [0 , 0 , 1]
         else:
             df[3] = df[2]
-        df = df[:100]
+        df = df[:20]
         # split data into 80% train, 15% validation and 5% unseen test data
         n_samples = len(df)
         train_x, val_x, train_y, val_y = train_test_split(df[0].tolist(), df[3].tolist(), test_size=0.2,
@@ -98,7 +98,7 @@ class BaseModel:
                                                input_size=self.input_size)
         valid_generator = CustomImageGenerator(val_x, val_y, directory=dir, batch_size=self.batch_size,
                                                input_size=self.input_size)
-
+        # save the best weights
         check_point = ModelCheckpoint('best_' + self.weight_file, monitor='val_loss', mode='min', save_best_only=True,
                                       verbose=1)
 
@@ -113,8 +113,7 @@ class BaseModel:
                                       validation_steps=valid_generator.n // self.batch_size,
                                       callbacks=[check_point])
 
-        # save weight and test data
-        self.model.save_weights(self.weight_file)
+
         with open('../history_{}.pkl'.format(self.model_name), "wb") as f:
             pickle.dump({'history': self.history.history}, f)
 
@@ -127,7 +126,7 @@ class BaseModel:
             df[3] = [[l[0], l[1], l[2:].sum()] for l in df[2].tolist()]  # 3: labels summarized into 3 e. g. [0 , 0 , 1]
         else:
             df[3] = df[2]
-        df = df[:200]
+
         unseen_gen = CustomImageGenerator(df[0].tolist(), df[3].tolist(), directory=dir, batch_size=1, shuffle=False,
                                           input_size=self.input_size)
 

@@ -1,7 +1,7 @@
 from tensorflow.keras.layers import Dropout, AveragePooling2D, Flatten, Dense
 from tensorflow.keras.models import Model
 from tensorflow.keras import applications
-from Models.BaseModel import BaseModel
+from models.BaseModel import BaseModel
 
 
 class ResNet152(BaseModel):
