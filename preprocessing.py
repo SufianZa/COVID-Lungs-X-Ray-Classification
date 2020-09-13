@@ -5,7 +5,7 @@ from glob import glob
 from PIL import Image
 
 from tqdm import tqdm
-from utils.augmentation import save_augmentation
+from utils.augmentation import save_augmentation, save_image
 from skimage import exposure
 import matplotlib.pyplot as plt
 import pickle
@@ -26,6 +26,7 @@ class Preprocessing:
 
     def load(self):
         data = []
+        test_data = []
         no_finding_aug = 0
         for image_path in tqdm(self.images_list):
             image_name = os.path.basename(image_path)
@@ -45,29 +46,29 @@ class Preprocessing:
 
             # extract label
             label = np.array(np.array(csv_row.iloc[0][self.CLASS_TARGETS]) > 0).astype(int)
-
+            if 100 > self.label_counter[np.argmax(label)] > 80:
+                save_image(image, image_name, self.dst_dir)
+                test_data.append((image_name, features, label))
+                self.label_counter = self.label_counter + label
+                continue
+            elif self.label_counter[np.argmax(label)] > 100:  # discard images above 100
+                continue
             self.label_counter = self.label_counter + label
 
             # throw error if label not valid
             if np.count_nonzero(label) != 1:
                 raise ValueError('CSV Data Error: Found no corresponding label in row {}'.format(csv_row))
 
-            # if no finding
-            if label[0] and no_finding_aug < 600:
-                save_augmentation(image, image_name, label, features, data, self.dst_dir, aug_num=1)
-                no_finding_aug += 1
+            save_augmentation(image, image_name, label, features, data, self.dst_dir, aug_num=3)
 
-            # if Covid
-            if label[1]:
-                save_augmentation(image, image_name, label, features, data, self.dst_dir)
-
-            # add to data object
             data.append((image_name, features, label))
+            save_image(image, image_name, self.dst_dir)
 
-            result = Image.fromarray((image * 255).astype(np.uint8))
-            result.save(os.path.join(self.dst_dir, image_name))
-        with open('paths_features_labels.pkl', 'wb') as f:
+        with open('train_paths_features_labels.pkl', 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+
+        with open('test_paths_features_labels.pkl', 'wb') as f:
+            pickle.dump(test_data, f, pickle.HIGHEST_PROTOCOL)
         self.plot_bar(data)
 
     def plot_bar(self, data):

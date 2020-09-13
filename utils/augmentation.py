@@ -103,9 +103,6 @@ def shear_noise(image):
     return shear(noise(image))
 
 
-def shear_noise(image):
-    return shear(rotation(image))
-
 
 def rotation_shear(image):
     return rotation(shear(image))
@@ -141,6 +138,10 @@ def save_augmentation(image, image_name, label, features, data, dst_dir, aug_num
     strategy_arr = strategies[:aug_num]
     for strategy in strategy_arr:
         res = STRATEGY_PICKER[strategy](image)
-        result = Image.fromarray((res * 255).astype(np.uint8))
-        result.save(os.path.join(dst_dir, 'Aug' + strategy + '_' + image_name))
-        data.append(('Aug' + strategy + '_' + image_name, features, label))
+        save_image(res, 'Aug' + strategy + '_' + image_name, dst_dir)
+        data.append(( 'Aug' + strategy + '_' + image_name, features, label))
+
+
+def save_image(image, image_name, dst_dir):
+    result = Image.fromarray((image * 255).astype(np.uint8))
+    result.save(os.path.join(dst_dir, image_name))

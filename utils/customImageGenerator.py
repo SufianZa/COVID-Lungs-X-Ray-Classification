@@ -45,10 +45,11 @@ class CustomImageGenerator(Sequence):
             file_path = os.path.join(self.dir, file_name)
             if not (os.path.isfile(file_path) and os.access(file_path, os.R_OK)):
                 print("Error: Either the file is missing or not readable {}".format(file_name))
+                continue
             img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
             img = self.cut_edges(img, 25, 25, 25, 25)
             if self.resize or 1:
                 img = np.array(cv2.resize(img, dsize=self.img_dim, interpolation=cv2.INTER_CUBIC)).astype(float)
             for c in range(self.channels):
-                images[i, :, :, c] = np.array(img)
+                images[i, :, :, c] = np.array(img)/255
         return images
