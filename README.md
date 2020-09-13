@@ -26,14 +26,14 @@ Therefore, we summarize the data into 3 classes. The CSV file is structured as f
 <tr><td>17</td><td>Support Devices            </td></tr>
 </table>
 
-![COVID and csv Features](image_sizes.png)
+![COVID and csv Features](results/image_sizes.png)
 Also the dataset consists of grayscale and RGB images with different image sizes, where there is 92 the RGB images 
 and 2008 Grayscale images.
 
 <h3>Features Correlations with Covid-19</h3>
 There are some features correlated with Covid-19 as showen in the following:
 
-![RGB images and size distribution](features_analysis.png)
+![RGB images and size distribution](results/features_analysis.png)
 
 <h3>Preparation of Train data</h3>
 Firstly, we apply histogram equalization for all training images. For rgb images, we extract a grayscale image. Then, the images are scaled uniformly to (320, 320).<br>
@@ -41,7 +41,7 @@ The Observations of the Dataset are quietly unbalanced, especially for the class
 After performing Offline Data-Augmentation we obtained 1300 observations for each class. 
 Data-Augmentation includes flipping, shearing, noise and increase/decrease brightness.
 
-![Balancing Data](balancing.png)
+![Balancing Data](results/balancing.png)
 
 <h3>Training</h3>
 The Date is splite into 
