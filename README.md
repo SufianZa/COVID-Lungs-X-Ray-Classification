@@ -134,10 +134,18 @@ Training stopped after
 <img src="results/ResNet152_curves.png" width="40%" alt="ResNet152">
 
 <h5>SqueezeNet<h5>
-  <table><tr> <img src="results/SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  <table>
+        <tr>
   <td>
+      SqueezeNet 3 classes
   </td>
-  <td> <img src="results/Binary_SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  <td> SqueezeNet 2 classes 
+  </td></tr>
+     <tr>
+  <td>
+      <img src="results/SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  </td>
+  <td> <img src="results/Binary_SqueezeNet_curves.png" alt="SqueezeNet">
   </td></tr>
   </table>
 
