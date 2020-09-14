@@ -61,8 +61,6 @@ The Date is splite into
 Training stopped after 
 
 <h3>Evaluation</h3>
-Most Models have reached accuracy of <strong>77%</strong> on unseen Data.
-
 <table>
 <th><td> Confusion matrix </td>  <td> Details </td></th>
 <tr><td>SqueezeNet </td><td><img src="results/SqueezeNet_conf_matrix.png"></td> 
@@ -90,7 +88,7 @@ Most Models have reached accuracy of <strong>77%</strong> on unseen Data.
 <td>
    <ul>
    <li>
-     Adam Optimizer with learning rate of 0.00001 and decay=1e-5. 
+     Adam Optimizer with learning rate of 0.0001 and decay=1e-5. 
   </li>
   <li>
     Batch_size = 64 
