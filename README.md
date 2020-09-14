@@ -85,6 +85,27 @@ Most Models have reached accuracy of <strong>77%</strong> on unseen Data.
   </li>
 </ul>
   </td></tr>
+  
+  <tr><td>SqueezeNet(BN) </td><td><img src="results/Binary_SqueezeNet_conf_matrix.png"></td> 
+<td>
+   <ul>
+   <li>
+     Adam Optimizer with learning rate of 0.00001 and decay=1e-5. 
+  </li>
+  <li>
+    Batch_size = 64 
+  </li>
+  <li>
+    Image size = 320 x 320
+  </li>
+  <li>
+  Accuracy = <strong>92%</strong> on unseen Data.
+  </li>
+  <li>
+  Epoch 16.
+  </li>
+</ul>
+  </td></tr>
   <tr><td>ResNet152 </td><td><img src="results/ResNet152_conf_matrix.png"></td> 
 <td>
    <ul>
@@ -111,12 +132,17 @@ Most Models have reached accuracy of <strong>77%</strong> on unseen Data.
 </table>
 <h3>learning curves </h3>
 <h5>ResNet152<h5>
-   
+
 <img src="results/ResNet152_curves.png" width="40%" alt="ResNet152">
 
 <h5>SqueezeNet<h5>
- 
- <img src="results/SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  <table><tr> <img src="results/SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  <td>
+  </td>
+  <td> <img src="results/Binary_SqueezeNet_curves.png" width="40%" alt="SqueezeNet">
+  </td></tr>
+  </table>
+
 
 <h5>VGG16<h5>
 <h5>DenseNet201<h5>
