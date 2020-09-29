@@ -33,21 +33,22 @@ Insgesamt werden die Unterschiede in Dimension und Farbe von den folgenden Grafi
 	\caption{Verteilung der Bilddimensionen}
 \end{figure}
 
-Von den Bildern sind 92 Farbbilder und 2008 Schwarzweißbilder. Ein Großteil der Dimensionen ist im Bereich von etwa 320 x 320 Pixeln angeordnet.
+Von den Bildern sind 92 Farbbilder und 2008 Schwarzweißbilder. Ein Großteil der Dimensionen ist im Bereich von 320 x 320 Pixeln angeordnet.
 
 \section{Klassen}
 
-Wir betrachten zunächst die Verteilung der drei Klassen (COVID-19 Erkrankung, Andere Erkrankung, Gesund) über das Datenset.
+Wir betrachten nun die Verteilung der Klassen über das Datenset in zwei Konstellationen. In der ersten Konstellation wird jede Krankheit von einer eigenen Klasse repräsentiert, während in der zweiten Konstellation alle Krankheiten mit Ausnahme von COVID-19 zu einer Klasse zusammengefasst werden.
 
 \begin{figure}[H]
 	\centering
 	\settowidth{\imagewidth}{\includegraphics{../results/balancing.png}}
-	\includegraphics[trim=0 0 0.5\imagewidth{} 0, clip,width=0.3\imagewidth{}]{../results/balancing.png}
+	\includegraphics[trim=0 0 0.51\imagewidth{} 0, clip,width=0.3\imagewidth{}]{../results/balancing.png}
 	\caption{Verteilung der Klassen}
 \end{figure}
 
-Der Anteil an COVID-19 Erkrankungen ist im Vergleich zu den anderen Klassen relativ gering.\\
-Um eine gute Generalisierungsfähigkeit sicherzustellen, ist es sinnvoll zusätzliche Trainingsbeispiele aus der COVID-19 Klasse bereitzustellen.
+In der ersten Konstellation sind die Krankheiten gleichverteilt. Pro Krankheit existieren 100 Beispielbilder. Insgesamt existieren 1400 Bilder für die Krankheitsklassen und 700 ohne Befund.\\
+In der zweiten Konstellation ist der Anteil an COVID-19 Erkrankungen im Vergleich zu den anderen Klassen relativ gering.
+Um eine gute Generalisierungsfähigkeit sicherzustellen, ist es hier sinnvoll zusätzliche Trainingsbeispiele aus der COVID-19 Klasse bereitzustellen.
 
 Wir betrachten ebenfalls die Verteilung der Features Alter und Geschlecht innerhalb der COVID-19 Erkrankungen aus dem Datenset.
 
@@ -58,4 +59,4 @@ Wir betrachten ebenfalls die Verteilung der Features Alter und Geschlecht innerh
 \end{figure}
 
 Die Anteile von männlichen Patienten ist höher als der von weiblichen. Ebenfalls sind Daten von eher älteren Patienten vorhanden. Das Durchschnittsalter beträgt 56,46 Jahre.\\
-Eventuell sind weitere Maßnahmen zur Entzerrung der Daten sinnvoll.
+Eventuell sind zusätzliche Maßnahmen zur Entzerrung der Daten sinnvoll.
