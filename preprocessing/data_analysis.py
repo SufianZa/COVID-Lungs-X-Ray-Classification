@@ -1,4 +1,5 @@
 import os
+import argparse
 import random
 import pandas as pd
 import numpy as np
@@ -21,10 +22,16 @@ def clean_data(df, print_info=False):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Analyze given dataset producing console output and figures describing the data.')
+    parser.add_argument('dataset',
+                        help='Path to dataset directory. Directory must contain a metadata.csv file and an images subdirectory containing training images.',
+                        nargs='?', default='.')
+    parser.add_argument('output', help='Path to output directory.', nargs='?', default='./results')
+    args = parser.parse_args()
     # Read the image list and csv as Dataframe
-    images_path = 'images/*'
+    images_path = os.path.join(args.dataset, 'images/*')
     image_files = glob(images_path, recursive=True)
-    df = pd.read_csv('../metadata.csv')
+    df = pd.read_csv(os.path.join(args.dataset, 'metadata.csv'))
 
     clean_data(df, print_info=True)
 
@@ -63,7 +70,7 @@ if __name__ == '__main__':
     ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax1.xaxis.set_tick_params(labelsize=9)
     ax1.set_title('Image Size Distribution', fontsize=12)
-    plt.savefig('results/image_sizes.png')
+    plt.savefig(args.output + '/image_sizes.png')
 
     plt.figure(figsize=(13, 5))
     plt.subplot(121)
@@ -77,7 +84,7 @@ if __name__ == '__main__':
     plt.subplot(122)
     covid['Age'].hist(bins=20)
     plt.xlabel('Age', fontsize=12)
-    plt.savefig('results/features_analysis.png')
+    plt.savefig(args.output + '/features_analysis.png')
 
     print('Average age of Covid patients: {}'.format(covid["Age"].mean()))
 
