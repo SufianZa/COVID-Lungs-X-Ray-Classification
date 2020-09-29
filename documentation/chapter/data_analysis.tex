@@ -60,3 +60,16 @@ Wir betrachten ebenfalls die Verteilung der Features Alter und Geschlecht innerh
 
 Die Anteile von männlichen Patienten ist höher als der von weiblichen. Ebenfalls sind Daten von eher älteren Patienten vorhanden. Das Durchschnittsalter beträgt 56,46 Jahre.\\
 Eventuell sind zusätzliche Maßnahmen zur Entzerrung der Daten sinnvoll.
+
+\section{Implementierung}
+
+Für die Datenanalyse steht das Python-Script \verb|data_analysis.py| zur Verfügung.
+
+Dieses kann folgendermaßen aufgerufen werden:
+
+\begin{verbatim}
+python preprocessing/data_analysis.py [-h] [dataset] [output]
+\end{verbatim}
+
+Die positionalen Argumente \verb|dataset| und \verb|output| geben jeweils den Pfad zum Datenset- und zum Ausgabeverzeichnis an.
+Über den optionalen Parameter \verb|-h| bzw. \verb|--help| kann eine Programmhilfe ausgegeben werden.
