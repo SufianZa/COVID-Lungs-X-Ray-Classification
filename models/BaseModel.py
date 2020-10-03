@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import pickle
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from tensorflow.keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report
@@ -78,7 +77,6 @@ class BaseModel:
                                   'Pleural Other', 'Fracture',
                                   'Support Devices']
             self.weight_file = 'weights/best_weight_{}_15_classes.hdf5'.format(model_name)
-        # self.weight_file = 'weights/best_test_weight_{}_15_classes.hdf5'.format(model_name)
         self.input_size = input_size
         self.init_network()
 
@@ -95,7 +93,7 @@ class BaseModel:
         df = self.get_data(df[0].tolist(), df[2].tolist())  # 0: files, 1: all_labels, 2: labels_summerized
         df = df[:20]
 
-        # split data into 80% train, 15% validation and 5% unseen test data
+        # split data into 80% train and 20% validation
         n_samples = len(df)
         train_x, val_x, train_y, val_y = train_test_split(df[0].tolist(), df[2].tolist(), test_size=0.2,
                                                           random_state=2134, stratify=df[2].tolist())
@@ -104,28 +102,24 @@ class BaseModel:
                 len(train_x) / n_samples) * 100, (len(val_x) / n_samples) * 100))
 
         # create generators
-
         train_generator = CustomImageGenerator(files=train_x, labels=train_y, directory=dir, batch_size=self.batch_size,
                                                input_size=self.input_size)
         valid_generator = CustomImageGenerator(files=val_x, labels=val_y, directory=dir, batch_size=self.batch_size,
                                                input_size=self.input_size)
+
         # save the best weights
         check_point = ModelCheckpoint(self.weight_file, monitor='val_loss', mode='min', save_best_only=True,
                                       verbose=1)
-
         early_stop = EarlyStopping(monitor='val_loss',
                                    min_delta=0,
                                    patience=5,
                                    verbose=0, mode='auto')
-
         # fit model
         self.history = self.model.fit(train_generator, validation_data=valid_generator, epochs=self.epochs,
                                       steps_per_epoch=train_generator.n // self.batch_size,
                                       validation_steps=valid_generator.n // self.batch_size,
                                       callbacks=[check_point, early_stop])
-
-        # with open('../history_{}.pkl'.format(self.model_name), "wb") as f:
-        #     pickle.dump({'history': self.history.history}, f)
+        show_learning_curves(self.history.history, self.model_name)
 
     def evaluate_model(self, dir, pkl_file):
         self.model.load_weights(self.weight_file)
@@ -143,14 +137,6 @@ class BaseModel:
         y_true = np.argmax(unseen_gen.labels, axis=1)
 
         show_confusion_Matrix(y_pred, y_true, self.CLASS_TARGETS, self.model_name)
-
-        try:
-            with open('../history_{}.pkl'.format(self.model_name), "rb") as f:
-                data = pickle.load(f)
-            show_learning_curves(data['history'], self.model_name)
-        except:
-            print('No history of learning_curves found')
-
         plt.show()
 
     def init_network(self):

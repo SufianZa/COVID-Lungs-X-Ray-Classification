@@ -1,13 +1,11 @@
 import os
 import argparse
-import random
 import pandas as pd
 import numpy as np
 from glob import glob
 from PIL import Image
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
-from collections import Counter
 
 
 def clean_data(df, print_info=False):

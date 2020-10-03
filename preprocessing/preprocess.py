@@ -19,7 +19,7 @@ class Preprocessing:
                               'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
         self.label_counter = np.zeros(len(self.CLASS_TARGETS))
         self.CLASS_NUM = len(self.CLASS_TARGETS)
-        self.images_list = glob(os.path.join(args.dataset, '*.jpg')) + glob(os.path.join(args.dataset, '*.jpeg')) + glob(os.path.join(args.dataset, '*.png'))
+        self.images_list = glob(os.path.join(src_dir, '*.jpg')) + glob(os.path.join(src_dir, '*.jpeg')) + glob(os.path.join(src_dir, '*.png'))
 
         self.df = pd.read_csv(csv_path)
         self.dst_dir = dst_dir

@@ -1,5 +1,4 @@
 import argparse
-import numpy  as np
 from glob import glob
 import pandas as pd
 import os

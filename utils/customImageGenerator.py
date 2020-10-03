@@ -2,7 +2,6 @@ from tensorflow.keras.utils import Sequence
 import numpy as np
 import os
 import cv2
-from skimage import exposure
 
 class CustomImageGenerator(Sequence):
     def __init__(self, directory, files, labels=None, n_features=2, batch_size=16, input_size=(320, 320, 1),

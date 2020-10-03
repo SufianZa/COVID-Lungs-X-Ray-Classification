@@ -1,8 +1,5 @@
 import argparse
-from keras.optimizers import Adam
 from models.SqueezeNet import SqueezeNet
-from models.DenseNet201 import DenseNet201
-from models.ResNet152 import ResNet152
 from glob import glob
 import os
 
