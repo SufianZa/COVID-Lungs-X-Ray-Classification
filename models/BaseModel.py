@@ -14,8 +14,8 @@ from glob import glob
 
 def show_learning_curves(history, model_name):
     fig, ax = plt.subplots(2, 1, figsize=(7, 12), facecolor='#F0F0F0')
-    ax[0].plot(history['accuracy'])
-    ax[0].plot(history['val_accuracy'])
+    ax[0].plot(history['acc'])
+    ax[0].plot(history['val_acc'])
     ax[0].set_title('model accuracy')
     ax[0].set_ylabel('accuracy')
     ax[0].set_xlabel('epoch')
@@ -29,7 +29,7 @@ def show_learning_curves(history, model_name):
     ax[1].legend(['train', 'valid.'])
     fig.suptitle('Learning curves of {} COVID Classifier'.format(model_name), y=1)
     plt.tight_layout()
-    plt.savefig('results/{}_curves.png', model_name)
+    plt.savefig('results/{}_curves.png'.format(model_name))
 
 
 def show_confusion_Matrix(y_pred, y_true, targets, model_name):
@@ -86,6 +86,7 @@ class BaseModel:
             with open(pkl_file, 'rb') as f:
                 data = pickle.load(f)
         except:
+            print('No Augmentation file \'{}\' found'.format(pkl_file))
             csv_file = glob(os.path.join(dir, '*.csv'))[0]
             p = Preprocessing(src_dir=dir, csv_path=csv_file)
             data = p.get_files_and_labels()
@@ -122,20 +123,19 @@ class BaseModel:
         show_learning_curves(self.history.history, self.model_name)
 
     def evaluate_model(self, dir, pkl_file):
-        self.model.load_weights(self.weight_file)
+        self.load_weights()
         with open(pkl_file, 'rb') as f:
             data = pickle.load(f)
         df = pd.DataFrame(data)  # 0: files, 1: features, 2: labels
         df = self.get_data(df[0], df[2])  # 0: files, 1: all_labels, 2: labels_summerized
 
-        unseen_gen = CustomImageGenerator(df[0].tolist(), df[2].tolist(), directory=dir, batch_size=1, shuffle=False,
+        unseen_gen = CustomImageGenerator(files=df[0].tolist(), labels=df[2].tolist(), directory=dir, batch_size=1, shuffle=False,
                                           input_size=self.input_size)
 
         predictions = self.model.predict(unseen_gen, workers=0, use_multiprocessing=False, verbose=0)
 
         y_pred = np.argmax(predictions, axis=1)
         y_true = np.argmax(unseen_gen.labels, axis=1)
-
         show_confusion_Matrix(y_pred, y_true, self.CLASS_TARGETS, self.model_name)
         plt.show()
 

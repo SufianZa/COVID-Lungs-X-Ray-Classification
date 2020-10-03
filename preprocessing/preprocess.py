@@ -131,4 +131,4 @@ if __name__ == '__main__':
     parser.add_argument('output', help='Path to image output directory.', nargs='?', default='./train_data')
     parser.add_argument('figure_output', help='Path to figure output directory.', nargs='?', default='./results')
     args = parser.parse_args()
-    Preprocessing(csv_path=(args.dataset + '/metadata.csv'), src_dir=(args.dataset + '/images'), dst_dir=args.output, figure_dst_dir=args.figure_output).load()
+    Preprocessing(csv_path=(args.dataset + '/metadata.csv'), src_dir=(args.dataset), dst_dir=args.output, figure_dst_dir=args.figure_output).load()
