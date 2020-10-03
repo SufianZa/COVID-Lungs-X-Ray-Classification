@@ -1,18 +1,19 @@
 import os
+import argparse
 import pandas as pd
 import numpy as np
 from glob import glob
 from PIL import Image
 
 from tqdm import tqdm
-from preprocessing.augmentation import save_augmentation, save_image
+from augmentation import save_augmentation, save_image
 from skimage import exposure
 import matplotlib.pyplot as plt
 import pickle
 
 
 class Preprocessing:
-    def __init__(self, csv_path, src_dir, dst_dir):
+    def __init__(self, csv_path, src_dir, dst_dir, figure_dst_dir):
         self.IMAGE_SIZE = (320, 320)
         self.CLASS_TARGETS = ['No Finding', 'Covid', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
                               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
@@ -22,6 +23,7 @@ class Preprocessing:
         self.images_list = glob(os.path.join(src_dir, '*'), recursive=True)
         self.df = pd.read_csv(csv_path)
         self.dst_dir = dst_dir
+        self.figure_dst_dir = figure_dst_dir
         if not os.path.exists(self.dst_dir):
             os.makedirs(self.dst_dir)
 
@@ -100,8 +102,15 @@ class Preprocessing:
 
         plt.tight_layout()
         axs[0][1].set_xticklabels(self.CLASS_TARGETS, rotation=90, fontsize=9)
-        plt.savefig('results/balancing.png')
+        plt.savefig(self.figure_dst_dir + '/balancing.png')
 
 
 if __name__ == '__main__':
-    Preprocessing(csv_path='../metadata.csv', src_dir='../images', dst_dir='../train_data').load()
+    parser = argparse.ArgumentParser(description='Preprocess and augment images of given dataset. Additionally figures will be created.')
+    parser.add_argument('dataset',
+                        help='Path to dataset directory. Directory must contain a metadata.csv file and an images subdirectory containing training images.',
+                        nargs='?', default='.')
+    parser.add_argument('output', help='Path to image output directory.', nargs='?', default='./train_data')
+    parser.add_argument('figure_output', help='Path to figure output directory.', nargs='?', default='./results')
+    args = parser.parse_args()
+    Preprocessing(csv_path=(args.dataset + '/metadata.csv'), src_dir=(args.dataset + '/images'), dst_dir=args.output, figure_dst_dir=args.figure_output).load()
