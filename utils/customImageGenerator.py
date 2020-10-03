@@ -2,16 +2,18 @@ from tensorflow.keras.utils import Sequence
 import numpy as np
 import os
 import cv2
-
+from skimage import exposure
 
 class CustomImageGenerator(Sequence):
-    def __init__(self, files, labels, directory, n_features=2, batch_size=16, input_size=(320,320,1),
+    def __init__(self, directory, files, labels=None, n_features=2, batch_size=16, input_size=(320, 320, 1),
                  n_classes=3, shuffle=True):
         self.img_dim = input_size[:2]
         self.channels = input_size[2]
         self.files = files
         self.n = len(self.files)
         self.labels = labels
+        if not self.labels:
+            self.labels = np.zeros(len(files))
         self.batch_size = batch_size
         self.resize = self.img_dim != (320, 320)
         self.n_classes = n_classes
@@ -34,10 +36,11 @@ class CustomImageGenerator(Sequence):
         labels_batch = np.array([self.labels[k] for k in indices])
         return self.get_images_batch(files_batch), labels_batch
 
-    def cut_edges(self, img, top=0, bottom=0, left=0, right=0, a=0):
-      w,h = img.shape
-      img = np.array(img)
-      return img[top+a:h-bottom-a,left+a:w-right-a]
+    @staticmethod
+    def trim(img, top=0, bottom=0, left=0, right=0, a=0):
+        w, h = img.shape
+        img = np.array(img)
+        return img[top + a:h - bottom - a, left + a:w - right - a]
 
     def get_images_batch(self, files_batch):
         images = np.empty((self.batch_size, *self.img_dim, self.channels))
@@ -47,9 +50,9 @@ class CustomImageGenerator(Sequence):
                 print("Error: Either the file is missing or not readable {}".format(file_name))
                 continue
             img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-            img = self.cut_edges(img, 25, 25, 25, 25)
+            img = self.trim(img, 20, 20, 20, 20)
             if self.resize or 1:
-                img = np.array(cv2.resize(img, dsize=self.img_dim, interpolation=cv2.INTER_CUBIC)).astype(float)
+                img = np.array(cv2.resize(img, dsize=self.img_dim, interpolation=cv2.INTER_CUBIC)).astype(float) / 255
             for c in range(self.channels):
-                images[i, :, :, c] = np.array(img)/255
+                images[i, :, :, c] = np.array(img)
         return images

@@ -6,7 +6,7 @@ from glob import glob
 from PIL import Image
 
 from tqdm import tqdm
-from augmentation import save_augmentation, save_image
+from preprocessing.augmentation import save_augmentation, save_image
 from skimage import exposure
 import matplotlib.pyplot as plt
 import pickle
@@ -14,6 +14,7 @@ import pickle
 
 class Preprocessing:
     def __init__(self, csv_path, src_dir, dst_dir, figure_dst_dir):
+
         self.IMAGE_SIZE = (320, 320)
         self.CLASS_TARGETS = ['No Finding', 'Covid', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
                               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
@@ -24,7 +25,7 @@ class Preprocessing:
         self.df = pd.read_csv(csv_path)
         self.dst_dir = dst_dir
         self.figure_dst_dir = figure_dst_dir
-        if not os.path.exists(self.dst_dir):
+        if dst_dir and not os.path.exists(self.dst_dir):
             os.makedirs(self.dst_dir)
 
     def load(self):
@@ -73,6 +74,24 @@ class Preprocessing:
         with open('../test_paths_features_labels.pkl', 'wb') as f:
             pickle.dump(test_data, f, pickle.HIGHEST_PROTOCOL)
         self.plot_bar(data)
+
+    def get_files_and_labels(self):
+        data = []
+        for image_path in tqdm(self.images_list):
+            image_name = os.path.basename(image_path)
+            # extract features from csv
+            if (self.df.File == image_name).any():
+                csv_row = self.df.loc[self.df.File == image_name]
+                features = np.array([*csv_row['Age'].values, csv_row['Sex'].values])
+                # extract label
+                label = np.array(np.array(csv_row.iloc[0][self.CLASS_TARGETS]) > 0).astype(int)
+
+                # throw error if label not valid
+                if np.count_nonzero(label) != 1:
+                    raise ValueError('CSV Data Error: Found no corresponding label in row {}'.format(csv_row))
+
+                data.append((image_name, features, label))
+        return np.array(data)
 
     def plot_bar(self, data):
         df = pd.DataFrame(data)
