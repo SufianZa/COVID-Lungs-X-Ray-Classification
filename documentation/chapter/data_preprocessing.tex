@@ -153,3 +153,14 @@ Mit den beschriebenen Methoden werden die im Folgenden dargestellte Verteilung e
 	\caption{Verteilung der Klassen nach Datenaugmentation}
 	\label{fig:balancing}
 \end{figure}
+
+\section{Implementierung}
+
+Zur Vorverarbeitung der Bilddaten und der Datenaugmentation dient das Python-Script \verb|preprocess.py|.
+
+\begin{verbatim}
+python preprocessing/preprocess.py [-h] [dataset] [output] [figure_output]
+\end{verbatim}
+
+Das \verb|dataset| Argument gibt analog zu den anderen Scripten das Verzeichnis an unter dem das Datenset zu finden ist. Zusätzlich können über \verb|output| und \verb|figure_output| die Ausgabeverzeichnisse für die erzeugten Bilder und Grafiken bestimmt werden.\\
+Es steht eine Programmhilfe über den Parameter \verb|-h| zur Verfügung.
