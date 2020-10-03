@@ -81,10 +81,12 @@ class BaseModel:
         self.init_network()
 
     def train(self, dir, pkl_file):
+        d = dir
         try:
             # load files, label, features
             with open(pkl_file, 'rb') as f:
                 data = pickle.load(f)
+            d = 'train_data'
         except:
             print('No Augmentation file \'{}\' found'.format(pkl_file))
             csv_file = glob(os.path.join(dir, '*.csv'))[0]
@@ -103,9 +105,9 @@ class BaseModel:
                 len(train_x) / n_samples) * 100, (len(val_x) / n_samples) * 100))
 
         # create generators
-        train_generator = CustomImageGenerator(files=train_x, labels=train_y, directory=dir, batch_size=self.batch_size,
+        train_generator = CustomImageGenerator(files=train_x, labels=train_y, directory=d, batch_size=self.batch_size,
                                                input_size=self.input_size)
-        valid_generator = CustomImageGenerator(files=val_x, labels=val_y, directory=dir, batch_size=self.batch_size,
+        valid_generator = CustomImageGenerator(files=val_x, labels=val_y, directory=d, batch_size=self.batch_size,
                                                input_size=self.input_size)
 
         # save the best weights

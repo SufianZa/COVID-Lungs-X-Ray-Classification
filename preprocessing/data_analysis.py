@@ -20,15 +20,17 @@ def clean_data(df, print_info=False):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Analyze given dataset producing console output and figures describing the data.')
+    parser = argparse.ArgumentParser(
+        description='Analyze given dataset producing console output and figures describing the data.')
     parser.add_argument('dataset',
                         help='Path to dataset directory. Directory must contain a metadata.csv file and an images subdirectory containing training images.',
                         nargs='?', default='.')
     parser.add_argument('output', help='Path to output directory.', nargs='?', default='./results')
     args = parser.parse_args()
     # Read the image list and csv as Dataframe
-    images_path = os.path.join(args.dataset, 'images/*')
-    image_files = glob(images_path, recursive=True)
+    images_path = os.path.join(args.dataset)
+    image_files = glob(os.path.join(images_path, '*.jpg')) + glob(os.path.join(images_path, '*.jpeg')) + glob(os.path.join(images_path, '*.png'))
+
     df = pd.read_csv(os.path.join(args.dataset, 'metadata.csv'))
 
     clean_data(df, print_info=True)

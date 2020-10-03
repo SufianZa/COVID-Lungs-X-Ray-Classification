@@ -35,7 +35,7 @@ class Preprocessing:
             image_name = os.path.basename(image_path)
             # extract features from csv
             csv_row = self.df.loc[self.df.File == image_name]
-            features = np.array([*csv_row['Age'].values, csv_row['Sex'].values])
+            features = np.array([*csv_row['Age'].values, csv_row['Sex'].values]).astype(object)
 
             # load image
             image = np.array(Image.open(image_path).resize(self.IMAGE_SIZE))
@@ -67,10 +67,10 @@ class Preprocessing:
             data.append((image_name, features, label))
             save_image(image, image_name, self.dst_dir)
 
-        with open('../train_paths_features_labels.pkl', 'wb') as f:
+        with open('train_paths_features_labels.pkl', 'wb') as f:
             pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
-        with open('../test_paths_features_labels.pkl', 'wb') as f:
+        with open('test_paths_features_labels.pkl', 'wb') as f:
             pickle.dump(test_data, f, pickle.HIGHEST_PROTOCOL)
         self.plot_bar(data)
 
