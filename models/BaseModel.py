@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report
 from utils.customImageGenerator import CustomImageGenerator
-from preprocessing.preprocessing import Preprocessing
+from preprocessing.preprocess import Preprocessing
 from glob import glob
 
 
@@ -163,7 +163,6 @@ class BaseModel:
 
         predictions = self.model.predict(pred_gen, workers=0, use_multiprocessing=False, verbose=0)
         y_pred = np.argmax(predictions, axis=1)
-        print(list(zip(y_pred, files_list)))
         classes = np.array(self.CLASS_TARGETS)
         return classes[y_pred]
 

@@ -4,24 +4,23 @@ import pandas as pd
 import numpy as np
 from glob import glob
 from PIL import Image
-
+from preprocessing.augmentation import save_image, save_augmentation
 from tqdm import tqdm
-from preprocessing.augmentation import save_augmentation, save_image
 from skimage import exposure
 import matplotlib.pyplot as plt
 import pickle
 
 
 class Preprocessing:
-    def __init__(self, csv_path, src_dir, dst_dir, figure_dst_dir):
-
+    def __init__(self, csv_path, src_dir, dst_dir=None, figure_dst_dir=None):
         self.IMAGE_SIZE = (320, 320)
         self.CLASS_TARGETS = ['No Finding', 'Covid', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
                               'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
                               'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture', 'Support Devices']
         self.label_counter = np.zeros(len(self.CLASS_TARGETS))
         self.CLASS_NUM = len(self.CLASS_TARGETS)
-        self.images_list = glob(os.path.join(src_dir, '*'), recursive=True)
+        self.images_list = glob(os.path.join(args.dataset, '*.jpg')) + glob(os.path.join(args.dataset, '*.jpeg')) + glob(os.path.join(args.dataset, '*.png'))
+
         self.df = pd.read_csv(csv_path)
         self.dst_dir = dst_dir
         self.figure_dst_dir = figure_dst_dir
