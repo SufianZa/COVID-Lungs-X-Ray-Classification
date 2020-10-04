@@ -1,46 +1,14 @@
-%!TEX root = ../documentation.tex
-\chapter{Einleitung}
-\label{ch:intro}
+\section{Einleitung}
+\label{ch:einleitung}
 
-\blindtext
-
-\section{Ein Unterkapitel}
-\Blindtext
-
-\section{Noch ein Unterkapitel}
-\blindmathpaper
-\Blindtext
-
-
-Ein paar Zitationen wie \cite{Hartley2004} und \cite{Bishop2006} \todo{mehr TODOs hinzufügen}
-
-\begin{table}[ht]
-	\centering
-	\begin{tabular}{c|c|c}
-		a & b & c \\ \hline
-		1 & 2 & 3 \\
-		1 & 2 & 3 \\
-		1 & 2 & 3
-	\end{tabular}
-	\caption{Eine Tabelle}
-\end{table}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=0.3\textwidth]{example-image-a}
-	\caption{Eine Bildunterschrift}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{example-image-a}
-		\caption{Eine Unterschrift}
-	\end{subfigure} \hfill
-	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{example-image-b}
-		\caption{Noch eine}
-	\end{subfigure}
-	\caption{Noch mehr}
-\end{figure}
-
+In Dezember 2019 ist ein Virus in Wuhan, China, ausgebrochen welcher dann Coronavirus (SARS-CoV-2), bzw. Covid-19 genannt wurde. Dieser Virus ist eine Lungenkrankheit, welche oft eine Pneunomie auslöst. Er hat sich erst aus dem Gebiet (Wuhan) in das ganze Land China ausgebreitet und fing dann nach 2-3 Monaten an, sich auch in andere Länder zu verbreiten. Dieser Anstieg war so rapide, dass bis mitte April schon mehr als 2 Millionen Menschen infiziert wurden und 150.000 von diesen gestorben sind. Inzwischen zum Zeitpunkt Oktober, sind diese Zahlen sogar auf 35 Millionen Infektionen und davon 1 Millionen Todesfälle. An diesen Zahlen erkennt man sehr schnell, dass dieses Virus sehr ernst zu nehmen ist. Um diese Zahlen möglichst gering zu halten, ist das schnelle und richtige diagnostizieren der Krankheit wichtig. Hierfür gibt es verschiedene Methoden, wobei die am häufigsten angewandte Methode über eine Probe des Rachens verläuft. Mit dieser Methode dauert es in der Regel etwa 48 Stunden, bis man die Ergebnisse hat, weswegen man weiter forscht, um vorallem auch eine höchstmögliche Genauigkeit beizubehalten, zusätzlich zu einem schnellen Ergebnis. Da diese Erkrankung eine Lungenkrankheit ist, hat man sich in Studien Röntgenbilder der Lunge angeguckt und Covid-19 Patienten mit Patienten ohne Covid-19 verglichen. Hierbei ist aufgefallen, dass der Virus Abnormalitäten auf der Lunge hinterlässt, welche dann im Röntgenbild zu erkennen sind. Dies führt dann zu der Idee, ein Deep Learning Modell aufzustellen, welches trainiert wird, so dass möglichst viele Patienten schnell und genau diagnostiziert werden können.
+\newline
+Das ganze Projekt fängt dann damit an, dass man Bilder zum Trainieren und auch Testen des Modells benötigt. Jedoch, dadurch, dass der Virus noch relativ neu ist, gibt es leider nicht viele (öffentliche) Röntgenbilder, welche man benutzen könnte. Hier wurde von CheXpert\footnote{"CheXpert is a large dataset of chest X-rays and competition for automated chest x-ray interpretation, which features uncertainty labels and radiologist-labeled reference standard evaluation sets. https://stanfordmlgroup.github.io/competitions/chexpert/"}, welche ebenfalls ein Deep Learning Modell, mit einem passenden Paper dazu, aufgesetzt haben, ein Datenset von Bildern bereit gestellt. Dieses Datenset beinhaltet 2100 Röntgenbilder von Patienten, mitunter 100 an Covid-19 erkrankten Patienten.
+\newline
+Um mit diesem Datensatz weiter zu arbeiten, muss man diesen vorerst anpassen, da zum einen der Anteil der Covid-Bilder noch zu gering ist und zum anderen Störfaktoren bearbeitet werden müssen. Der Datensatz beinhaltet neben gesunden- und Covid Patienten auch anders erkrankte Patienten, zusätzlich zu Patienten mit Geräten im Körper, wie z.B. Herzschrittmacher. Da für uns in diesem Fall nur Covid-Patienten wichtig sind, müssen die anderen Faktoren durch passendes Augmentation (dazu mehr in späteren Kapiteln) und durch das Trainig raus gefiltert werden. Hierfür werden die Bilder bearbeitet, Noise entfernt, heller/dunkler gemacht und noch mehr in Kombination. Zusätzlich wurden alle Bilder auf eine Größe von 320x320 komprimiert, um Informationsverlust durch das vergrößern von einigen Bildern zu vermeiden. Im letzten Schritt muss der Datensatz vergrößert werden, hierfür benutzen wir Spiegelungen und leichte Zerrungen, um im Endhinein auf die gleiche Anzahl von Bildern zu kommen, mit 1: gesunden Patienten, 2: an Covid-19 erkrankten Patienten und 3: anders erkrankten Patienten.
+\newline
+Nach der Datenverabeitung werden die Modelle trainiert, hierbei haben wir uns verschiedene Modelle angeguckt und verglichen, so dass wir uns am Ende darauf entschieden haben das Modell ResNet und das Modell SqueezeNet zu benutzen (genaueres im Kapitel "Models"). Diese Beiden Modelle wurden dann so weit angepasst und ausgebessert, bis man diese vergleichen konnte, wobei in unserem Fall, SqueezeNet die höhere Genauigkeit geboten hat. Diese Ergebnisse stellen wir dann am Ende tabellarisch und grafisch dar, sowohl als Confusions-/Binär- Matrizen, als auch als Lernkurven, mit den passenden Ergebnissen.
+\newline
+Obwohl diese Ergebnisse bereits zufriedenstellend scheinen, kann man diese mit Sicherheit um einiges verbessern, indem man größere Datensätze zur Verfügung bekommt und mit diesen dann noch weiter experimentiert.
+\newline
+Der Rest dieser Ausarbeitung ist wie folgt gegliedert. Zunächst werden in Kapitel 3 die gegebenen Daten analysiert, um genau zu wissen was angepasst werden muss. So wird dann in Kapitel 4 die folgende Datenvorverarbeitung erklärt. In Kapitel 5 gibt es genauere Erklärungen zu den verwendeten und trainierten Modellen, um einen besseren Einblick zu bekommen, wie diese denn Funktionieren. Darauf folgt in Kapitel 6 das Eigentliche Training und in Kapitel 7 werden dann die ganzen Ergebnisse aufgezeigt, welche durch das ganze Projekt hindurch und vorallem am Ende gesammelt wurden. Abgeschlossen wird die Ausarbeitung mit einer Einleitung zum Ausführen der Skripte, gefolgt von der Literatur.
