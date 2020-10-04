@@ -25,7 +25,6 @@ class SqueezeNet(BaseModel):
         input_layer = Input(self.input_size)
         # conv 1
         x = Conv2D(kernel_size=7, filters=96, padding='same', activation='relu', strides=2)(input_layer)
-        x = BatchNormalization()(x)
 
         # maxpool
         x = MaxPool2D(pool_size=3, strides=2)(x)
@@ -76,5 +75,5 @@ class SqueezeNet(BaseModel):
 
         # compile Model
         self.model.compile(loss='categorical_crossentropy',
-                           optimizer=Adam(lr=0.00001, decay=1e-5),
+                           optimizer=Adam(lr=0.0001, decay=1e-5),
                            metrics=['accuracy'])
